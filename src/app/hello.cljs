@@ -1,7 +1,6 @@
 (ns app.hello
-  (:require
-   [reagent.core :as r]
-   [ajax.core :refer [GET json-response-format]]))
+  (:require [reagent.core :as r]
+            [ajax.core :refer [GET json-response-format]]))
 
 ;; This function uses reduce-kv to iterate over 
 ;; the key-value pairs of a map, and recursively 
@@ -23,10 +22,6 @@
 (defn handler [response]
   (let [data (keywordize-keys response)
         grouped-by-season (group-by :season data)]
-    (doseq [[season eps] grouped-by-season]
-      (js/console.log (str "Season " season))
-      (doseq [ep eps]
-        (js/console.log (str "Ep " (:name ep)))))
     (reset! state-seasons grouped-by-season)))
 
 (defn error-handler [{:keys [status status-text]}]
@@ -39,14 +34,26 @@
      :response-format :json
      :keywords? true}))
 
-(defn show-seasons [items]
-  (if (= 0 (count items))
+(def colors
+  ["#ffc266" "#ffdb4d" "#e6ff99" "#a3cc33" "#ccff33" "#33cc33"])
+
+(defn color-scale [val]
+  (let [range-size (- 10 6)
+        index (min (max (int (/ (* (- val 6) (count colors)) range-size)) 0) (- (count colors) 1))]
+    (nth colors index)))
+
+(defn ui-episodes [eps]
+  [:p (for [ep eps]
+        [:p {:style {:background-color (color-scale (:average  (:rating ep)))}} (str (:name ep) " - " (:average  (:rating ep)))])])
+
+(defn ui-seasons [seasons]
+  (if (= 0 (count seasons))
     [:div.my-10 "No data yet..."]
     [:div
-     [:ul.list-disc.px-6
-      (for [item items]
-        [:li.my-4.bg-green-200.py-2.px-2.rounded
-         [:div  (str item) " - "]])]]))
+     (for [[season eps] seasons]
+       [:<>
+        [:h2.font-bold (str "Season " season)]
+        (ui-episodes eps)])]))
 
 (defn query-btn []
   [:input.bg-blue-500.text-white.font-bold.py-2.px-4.border.border-blue-700.rounded
@@ -59,5 +66,5 @@
    [:div.my-4.mx-4
     [query-btn]]
    [:div.my-10
-    [show-seasons @state-seasons]]])
+    [ui-seasons @state-seasons]]])
 

@@ -28,7 +28,7 @@
   (.log js/console (str "ERROR: " status " " status-text)))
 
 (defn query []
-  (GET "https://api.tvmaze.com/shows/540/episodes"
+  (GET uri
     {:error-handler error-handler
      :handler handler
      :response-format :json
@@ -43,17 +43,21 @@
     (nth colors index)))
 
 (defn ui-episodes [eps]
-  [:p (for [ep eps]
-        [:p {:style {:background-color (color-scale (:average  (:rating ep)))}} (str (:name ep) " - " (:average  (:rating ep)))])])
+  [:div (for [ep eps]
+          [:p.p-4.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
+           (:average  (:rating ep))])])
 
 (defn ui-seasons [seasons]
+  (for [[season eps] seasons]
+    [:div
+     [:h2.font-bold.text-center {:style {:background-color "#f9fafb"}} (str "S:" season)]
+     (ui-episodes eps)]))
+
+(defn ui-main [seasons]
   (if (= 0 (count seasons))
     [:div.my-10 "No data yet..."]
-    [:div
-     (for [[season eps] seasons]
-       [:<>
-        [:h2.font-bold (str "Season " season)]
-        (ui-episodes eps)])]))
+    [:div.grid.grid-cols-12.gap-x-2
+     (ui-seasons seasons)]))
 
 (defn query-btn []
   [:input.bg-blue-500.text-white.font-bold.py-2.px-4.border.border-blue-700.rounded
@@ -62,9 +66,8 @@
     :on-click #(query)}])
 
 (defn hello []
-  [:<>
+  [:div.my-10
    [:div.my-4.mx-4
     [query-btn]]
-   [:div.my-10
-    [ui-seasons @state-seasons]]])
+   [ui-main @state-seasons]])
 

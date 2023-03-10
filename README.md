@@ -1,3 +1,6 @@
+# tv-series
+
+<!--
 This project was bootstrapped with [Create CLJS App](https://github.com/filipesilva/create-cljs-app).
 
 ## Available Scripts
@@ -68,5 +71,4 @@ Quick reference https://cljs.info/cheatsheet/.
 Offline searchable docs https://devdocs.io/.
 
 VSCode plugin https://github.com/BetterThanTomorrow/calva.
-
-# tv-series
+-->

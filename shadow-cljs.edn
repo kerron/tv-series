@@ -16,6 +16,9 @@
         :target :node-test}}
  :dependencies [[reagent "0.8.1"]
                 [devcards "0.2.6"]
+                [metosin/reitit "0.6.0"]
+                [metosin/reitit-spec "0.5.11"]
+                [metosin/reitit-frontend "0.6.0"]
                 [cljs-ajax "0.8.1"]]
  :dev-http {3000 "public"}
  :nrepl {:port 3333}

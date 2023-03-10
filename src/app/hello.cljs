@@ -1,6 +1,12 @@
 (ns app.hello
   (:require [reagent.core :as r]
+            [reitit.core :as rt]
+            [reitit.frontend :as rf]
+            [reitit.frontend.easy :as rfe]
+            [reitit.coercion.spec :as rss]
             [ajax.core :refer [GET json-response-format]]))
+
+(defonce state-seasons (r/atom nil))
 
 ;; This function uses reduce-kv to iterate over 
 ;; the key-value pairs of a map, and recursively 
@@ -14,8 +20,6 @@
     (if (sequential? data)
       (mapv keywordize-keys data)
       data)))
-
-(defonce state-seasons (r/atom nil))
 
 (defonce uri "https://api.tvmaze.com/shows/540/episodes")
 
@@ -44,8 +48,10 @@
 
 (defn ui-episodes [eps]
   [:div (for [ep eps]
-          [:p.p-4.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
-           (:average  (:rating ep))])])
+          [:a {:href "https://google.com"}
+           (js/console.log (str ep))
+           [:div.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
+            [:p.text-center.p-4 (:average  (:rating ep))]]])])
 
 (defn ui-seasons [seasons]
   (for [[season eps] seasons]

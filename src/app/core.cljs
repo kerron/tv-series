@@ -18,29 +18,38 @@
 (def routes
   [["/" {:name :routes/home
          :view #'page-home
-         :controllers [{:start (js/console.log "home 1")
-                        :stop (js/console.log "home 2")}]}]
+         :controllers
+         [{:start (js/console.log "home 1")
+           :stop (js/console.log "home 2")}]}]
+
    ["/episode/:slug" {:name :routes/episode
                       :view #'page-episode
                       :parameters
                       {:path {:slug int?}}
-                      :controllers [{:params (fn [match]
-                                               (-> match :parameters :path))
-                                     :start (fn [{:keys [slug]}]
-                                              (js/console.log "slug of " slug))
-                                     :stop #(js/console.log "episode 2")}]}]])
+                      :controllers
+                      [{:params (fn [match]
+                                  (-> match :parameters :path))
+                        :start (fn [{:keys [slug]}]
+                                 (js/console.log "slug of " slug))
+                        :stop #(js/console.log "episode 2")}]}]])
 
 (def router
-  (rf/router routes {:data {:coercion rss/coercion
-                            :controllers [{:start #(println "root start")
-                                           :stop #(println "root end")}]}}))
+  (rf/router routes {:data
+                     {:coercion rss/coercion
+                      :controllers
+                      [{:start #(println "root start")
+                        :stop #(println "root end")}]}}))
 
 (defn start-router! []
   (rfe/start!
    router
-   (fn [new-route] (swap! state-routes (fn [old-route]
-                                         (if new-route
-                                           (assoc new-route :controllers (rfc/apply-controllers (:controllers old-route) new-route))))))
+   (fn [new-route]
+     (swap! state-routes
+            (fn [old-route]
+              (when new-route
+                (assoc new-route :controllers
+                       (rfc/apply-controllers
+                        (:controllers old-route) new-route))))))
    ;; set to false to enable historyApi
    {:use-fragment false}))
 

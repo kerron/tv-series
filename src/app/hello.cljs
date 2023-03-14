@@ -1,9 +1,7 @@
 (ns app.hello
-  (:require [reagent.core :as r]
-            [reitit.core :as rt]
-            [reitit.frontend :as rf]
-            [reitit.frontend.easy :as rfe]
-            [reitit.coercion.spec :as rss]
+  (:require [app.ui-episodes :refer [ui-episodes]]
+            [app.ui-seasons :refer [ui-seasons]]
+            [reagent.core :as r]
             [ajax.core :refer [GET json-response-format]]))
 
 (defonce state-seasons (r/atom nil))
@@ -37,27 +35,6 @@
      :handler handler
      :response-format :json
      :keywords? true}))
-
-(def colors
-  ["#ffc266" "#ffdb4d" "#e6ff99" "#a3cc33" "#ccff33" "#33cc33"])
-
-(defn color-scale [val]
-  (let [range-size (- 10 6)
-        index (min (max (int (/ (* (- val 6) (count colors)) range-size)) 0) (- (count colors) 1))]
-    (nth colors index)))
-
-(defn ui-episodes [eps]
-  [:div (for [ep eps]
-          [:a {:href (rfe/href :routes/episode {:slug "123"})}
-           (js/console.log (str ep))
-           [:div.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
-            [:p.text-center.p-4 (-> ep :rating :average)]]])])
-
-(defn ui-seasons [seasons]
-  (for [[season eps] seasons]
-    [:div
-     [:h2.font-bold.text-center {:style {:background-color "#f9fafb"}} (str "S:" season)]
-     (ui-episodes eps)]))
 
 (defn ui-main [seasons]
   (if (= 0 (count seasons))

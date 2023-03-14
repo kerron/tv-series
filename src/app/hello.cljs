@@ -48,10 +48,10 @@
 
 (defn ui-episodes [eps]
   [:div (for [ep eps]
-          [:a {:href "https://google.com"}
+          [:a {:href (rfe/href :routes/episode {:slug "123"})}
            (js/console.log (str ep))
            [:div.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
-            [:p.text-center.p-4 (:average  (:rating ep))]]])])
+            [:p.text-center.p-4 (-> ep :rating :average)]]])])
 
 (defn ui-seasons [seasons]
   (for [[season eps] seasons]

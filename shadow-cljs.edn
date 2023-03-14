@@ -16,6 +16,7 @@
         :target :node-test}}
  :dependencies [[reagent "0.8.1"]
                 [devcards "0.2.6"]
+                [metosin/spec-tools "0.10.5"]
                 [metosin/reitit "0.6.0"]
                 [metosin/reitit-spec "0.5.11"]
                 [metosin/reitit-frontend "0.6.0"]

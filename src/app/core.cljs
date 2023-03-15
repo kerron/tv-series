@@ -5,15 +5,41 @@
             [reitit.frontend.easy :as rfe]
             [reitit.frontend.controllers :as rfc]
             [reitit.coercion.spec :as rss]
+            [ajax.core :refer [GET json-response-format]]
             [app.hello :refer [hello]]))
 
 (defonce state-routes (r/atom nil))
+(defonce state-episode (r/atom nil))
+(defonce state-loading (r/atom false))
 
 (defn page-home []
   (hello))
 
-(defn page-episode [{{:keys [slug]} :path-params}]
-  [:h1 "episode " slug])
+(defonce uri "https://api.tvmaze.com/episodes/")
+
+(defn handler [response]
+  (js/console.log "episode response " response)
+  (reset! state-loading false)
+  (reset! state-episode response))
+
+(defn error-handler [{:keys [status status-text]}]
+  (reset! state-loading false)
+  (.log js/console (str "ERROR: " status " " status-text)))
+
+(defn fetch [slug]
+  (reset! state-loading true)
+  (GET (str uri slug)
+    {:error-handler error-handler
+     :handler handler
+     :response-format :json
+     :keywords? true}))
+
+(defn page-episode []
+  (if @state-loading
+    [:div "is loading"]
+    (if (seq @state-episode)
+      [:h1 (-> @state-episode :name)]
+      [:p "episode not found"])))
 
 (def routes
   [["/" {:name :routes/home
@@ -30,6 +56,7 @@
                       [{:params (fn [match]
                                   (-> match :parameters :path))
                         :start (fn [{:keys [slug]}]
+                                 (fetch slug)
                                  (js/console.log "slug of " slug))
                         :stop #(js/console.log "episode 2")}]}]])
 
@@ -55,7 +82,7 @@
 
 ;; automatically get view depending on path
 (defn app []
-  [:div
+  [:div.bg-gray-100
    (let [current-view (-> @state-routes :data :view)]
      [current-view @state-routes])])
 

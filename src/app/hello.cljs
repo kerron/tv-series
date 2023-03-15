@@ -2,6 +2,7 @@
   (:require [app.ui-episodes :refer [ui-episodes]]
             [app.ui-seasons :refer [ui-seasons]]
             [reagent.core :as r]
+            [app.ui-header :refer [ui-header]]
             [ajax.core :refer [GET json-response-format]]))
 
 (defonce state-seasons (r/atom nil))
@@ -49,8 +50,10 @@
     :on-click #(query)}])
 
 (defn hello []
-  [:div.my-10
-   [:div.my-4.mx-4
-    [query-btn]]
-   [ui-main @state-seasons]])
+  [:<>
+   (ui-header)
+   [:div.my-10
+    [:div.my-4.mx-4
+     [query-btn]]
+    [ui-main @state-seasons]]])
 

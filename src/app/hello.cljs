@@ -1,11 +1,13 @@
 (ns app.hello
   (:require [app.ui-episodes :refer [ui-episodes]]
             [app.ui-seasons :refer [ui-seasons]]
+
             [reagent.core :as r]
             [app.ui-header :refer [ui-header]]
             [ajax.core :refer [GET json-response-format]]))
 
 (defonce state-seasons (r/atom nil))
+(defonce state-ratings (r/atom nil))
 
 ;; This function uses reduce-kv to iterate over 
 ;; the key-value pairs of a map, and recursively 
@@ -22,10 +24,15 @@
 
 (defonce uri "https://api.tvmaze.com/shows/540/episodes")
 
+(defn get-average-key [entry]
+  (get-in entry [:rating :average]))
+
 (defn handler [response]
   (let [data (keywordize-keys response)
-        grouped-by-season (group-by :season data)]
-    (reset! state-seasons grouped-by-season)))
+        grouped-by-season (group-by :season data)
+        grouped-by-ratings (group-by get-average-key data)]
+    (reset! state-seasons grouped-by-season)
+    (reset! state-ratings grouped-by-ratings)))
 
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console (str "ERROR: " status " " status-text)))

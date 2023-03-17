@@ -21,6 +21,5 @@
           [:a
            {:href (rfe/href
                    :routes/episode {:slug (get-episode-number ep)})}
-           (js/console.log (str ep))
            [:div.rounded-md.my-1 {:style {:background-color (color-scale (:average  (:rating ep)))}}
             [:p.text-center.p-4 (-> ep :rating :average)]]])])

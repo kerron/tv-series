@@ -5,6 +5,7 @@
             [reitit.frontend.easy :as rfe]
             [reitit.frontend.controllers :as rfc]
             [reitit.coercion.spec :as rss]
+            [app.ui-episode-details :refer [ui-episode-details]]
             [ajax.core :refer [GET json-response-format]]
             [app.hello :refer [hello]]))
 
@@ -38,7 +39,7 @@
   (if @state-loading
     [:div "is loading"]
     (if (seq @state-episode)
-      [:h1 (-> @state-episode :name)]
+      (ui-episode-details @state-episode)
       [:p "episode not found"])))
 
 (def routes
